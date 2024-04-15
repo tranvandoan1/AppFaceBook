@@ -6,138 +6,231 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from 'react-native';
-import React, {useState} from 'react';
-import {Size, SizeScale} from '../../assets/size';
+import React, { useState, useEffect } from 'react';
+import { Size, SizeScale } from '../../assets/size';
 import IconPublic from 'react-native-vector-icons/MaterialIcons';
 import IconAntDesign from 'react-native-vector-icons/AntDesign';
 import IconDot from 'react-native-vector-icons/Entypo';
 import IconMaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {FlatGrid} from 'react-native-super-grid';
+import { FlatGrid } from 'react-native-super-grid';
 import colors from '../../assets/colors';
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../App/Store';
+import { getAllDataPost, getData, uploadAllDataPost, uploadLike } from '../../Features/PostSlice';
 // @ts-ignore
-const data = [
-  {
-    id: '01',
-    user_id: '1',
-    title: 'Tạo tin',
-    image: [
-      'https://cdn.tgdd.vn/Files/2019/01/01/1142002/s8high_800x600.jpg',
-      'https://bigdata-vn.com/wp-content/uploads/2021/10/Hinh-nen-phong-canh-dep.jpg',
-      'https://didongviet.vn/dchannel/wp-content/uploads/2022/01/cute-didongviet.jpg',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWKXPuejYonuMBi3JfkwpAzd2gg-OvndZth2v62ptvhyd58VTvOdlO6MO0wNEp4RTjVEc&usqp=CAU',
-      'https://toanthaydinh.com/wp-content/uploads/2020/04/phong-canh-dep-6.jpg',
-      'https://toanthaydinh.com/wp-content/uploads/2020/04/phong-canh-dep-6.jpg',
-      'https://bigdata-vn.com/wp-content/uploads/2021/10/Hinh-nen-phong-canh-dep.jpg',
-    ],
-    likes: ['1', '3'],
-  },
-  {
-    id: '1',
-    user_id: '2',
-    title: 'Trần Văn Đoàn',
-    image: [
-      'https://vcdn1-dulich.vnecdn.net/2022/05/27/du-lich-Viet-Nam-3-1653637304.jpg?w=1200&h=0&q=100&dpr=1&fit=crop&s=JTkFADdHoPj9uPujAqAv0w',
-      'https://toanthaydinh.com/wp-content/uploads/2020/04/phong-canh-dep-6.jpg',
-    ],
-    likes: ['2', '4', '5'],
-  },
-  {
-    id: '2',
-    user_id: '3',
-    title: 'Trần Nguyễn Văn A',
-    image: [
-      'https://image.thanhnien.vn/w1024/Uploaded/2022/ifyiy/2022_01_04/a5ee06311886d2d88b97-981.jpg',
-      ,
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWKXPuejYonuMBi3JfkwpAzd2gg-OvndZth2v62ptvhyd58VTvOdlO6MO0wNEp4RTjVEc&usqp=CAU',
-    ],
-    likes: ['1', '3'],
-  },
-  {
-    id: '3',
-    user_id: '4',
-    title: 'Nguyễn Lê Hoài Thư Anh',
-    image: [
-      'https://info-imgs.vgcloud.vn/2020/07/17/15/bo-bang-dai-hoc-nhiep-anh-gia-ha-thanh-so-huu-thu-nhap-9-so-6.jpg',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWKXPuejYonuMBi3JfkwpAzd2gg-OvndZth2v62ptvhyd58VTvOdlO6MO0wNEp4RTjVEc&usqp=CAU',
-    ],
-    likes: [],
-  },
-  {
-    id: '4',
-    user_id: '3',
-    title: 'Third Item3',
-    image: [
-      'https://info-imgs.vgcloud.vn/2020/07/17/15/bo-bang-dai-hoc-nhiep-anh-gia-ha-thanh-so-huu-thu-nhap-9-so-6.jpg',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWKXPuejYonuMBi3JfkwpAzd2gg-OvndZth2v62ptvhyd58VTvOdlO6MO0wNEp4RTjVEc&usqp=CAU',
-    ],
-    likes: [],
-  },
 
-  {
-    id: '5',
-    user_id: '4',
-    title: 'Third Item4',
-    image: [
-      'https://info-imgs.vgcloud.vn/2020/07/17/15/bo-bang-dai-hoc-nhiep-anh-gia-ha-thanh-so-huu-thu-nhap-9-so-6.jpg',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWKXPuejYonuMBi3JfkwpAzd2gg-OvndZth2v62ptvhyd58VTvOdlO6MO0wNEp4RTjVEc&usqp=CAU',
-    ],
-    likes: [],
-  },
-  {
-    id: '6',
-    user_id: '2',
-    title: 'Third Item5',
-    image: [
-      'https://info-imgs.vgcloud.vn/2020/07/17/15/bo-bang-dai-hoc-nhiep-anh-gia-ha-thanh-so-huu-thu-nhap-9-so-6.jpg',
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWKXPuejYonuMBi3JfkwpAzd2gg-OvndZth2v62ptvhyd58VTvOdlO6MO0wNEp4RTjVEc&usqp=CAU',
-    ],
-    likes: [],
-  },
-];
-const Contents = () => {
+type Props = {
+  navigation: any
+}
+const Contents = ({ navigation }: Props) => {
+  console.log('1')
+  const dispatch = useDispatch<AppDispatch>();
+  console.log('2')
+  const useAppSelect: TypedUseSelectorHook<RootState> = useSelector;
+  console.log('3')
+  const dataPostsFake = useAppSelect((data: any) => data.posts.value);
+  console.log('4')
+
   const id_user = 1;
+  console.log('5')
   const width = SizeScale().width;
   const height = SizeScale().height;
   const widthApp = Size().width;
-  const [like, setLike] = useState<any>([]);
-  const [dataFake, setDataFake] = useState<any>(data);
-  const users = [
-    {id: 1, name: 'trần văn đoàn 1'},
-    {id: 2, name: 'trần văn đoàn 2'},
-    {id: 3, name: 'trần văn đoàn 3'},
-    {id: 4, name: 'trần văn đoàn 4'},
-  ];
+  const [iconEmotion, setIconEmotion] = useState<any>();
+  // const [like, setLike] = useState<any>([]);
+  // const [dataFake, setDataFake] = useState<any>(dataPostsFake);
 
-  const onclickLike = (item: any) => {
-    // const newdata = dataFake == undefined ? data : dataFake;
-    for (let i = 0; i < dataFake.length; i++) {
-      if (dataFake[i].id == item.id) {
-        if (dataFake[i].likes.length <= 0) {
-          dataFake[i].likes = [id_user];
-        } else {
-          const newLike = dataFake[i].likes?.filter(
-            (itemLike: any) => String(itemLike) !== String(id_user),
-          );
-          const coincide = dataFake[i].likes?.find(
-            (itemLike: any) => itemLike == id_user,
-          );
-          if (coincide == undefined) {
-            dataFake[i].likes = [...dataFake[i].likes, id_user];
+  const users = [
+    { id: 1, name: 'trần văn đoàn 1' },
+    { id: 2, name: 'trần văn đoàn 2' },
+    { id: 3, name: 'trần văn đoàn 3' },
+    { id: 4, name: 'trần văn đoàn 4' },
+  ];
+  const icons = [
+    {
+      id: 1,
+      name: 'like',
+      image:
+        'https://banner2.cleanpng.com/20180704/tgy/kisspng-thumb-signal-computer-icons-like-button-clip-art-y-linkage-5b3ca3765cac24.0367282415307006623796.jpg',
+    },
+    {
+      id: 2,
+      name: 'laugh',
+      image:
+        'https://cdn.chanhtuoi.com/uploads/2020/05/icon-facebook-08-2.jpg.webp',
+    },
+    {
+      id: 3,
+      name: 'cry',
+      image: 'https://cdn.chanhtuoi.com/uploads/2020/05/icon-facebook-27-1.jpg',
+    },
+    {
+      id: 4,
+      name: 'angry',
+      image:
+        'https://banner2.cleanpng.com/20180408/yew/kisspng-emoji-emoticon-computer-icons-sticker-angry-5aca0d77d693d2.7197998315231911598789.jpg',
+    },
+  ];
+  const onclickLike = async (item: any) => {
+    if (item.emotion == undefined) {
+      for (let i = 0; i < dataPostsFake.length; i++) {
+        if (dataPostsFake[i].id == item.id) {
+          if (dataPostsFake[i].likes.length <= 0) {
+            dataPostsFake[i].likes = [{ id_user: id_user, emotion: 1 }];
           } else {
-            dataFake[i].likes = [...newLike];
+            const newLike = dataPostsFake[i].likes?.filter(
+              (itemLike: any) => String(itemLike.id_user) !== String(id_user),
+            );
+            const coincide = dataPostsFake[i].likes?.find(
+              (itemLike: any) => itemLike.id_user == id_user,
+            );
+            if (coincide == undefined) {
+              dataPostsFake[i].likes = [
+                ...dataPostsFake[i].likes,
+                { id_user: id_user, emotion: 1 },
+              ];
+            } else {
+              dataPostsFake[i].likes = [...newLike];
+            }
           }
         }
       }
+      await dispatch(uploadAllDataPost(dataPostsFake))
+      // setDataFake([...dataFake]);
+      setIconEmotion(undefined);
+    } else {
+      for (let i = 0; i < dataPostsFake.length; i++) {
+        if (dataPostsFake[i].id == item?.data?.id) {
+          const newLike = dataPostsFake[i].likes?.filter(
+            (itemLike: any) => String(itemLike.id_user) !== String(id_user),
+          );
+          const coincide = dataPostsFake[i].likes?.find(
+            (itemLike: any) => itemLike.id_user == id_user,
+          );
+          if (coincide !== undefined || dataPostsFake[i].likes?.length <= 0) {
+            dataPostsFake[i].likes = [
+              ...newLike,
+              { id_user: id_user, emotion: item?.emotion },
+            ];
+          } else {
+            dataPostsFake[i].likes = [...newLike];
+          }
+        }
+      }
+      await dispatch(uploadAllDataPost(dataPostsFake))
+      // setDataFake([...dataFake]);
+      setIconEmotion(undefined);
     }
-    setDataFake([...dataFake]);
   };
 
+  const componentRenderLike = (item: any) => {
+    const checkLike = item?.likes?.find((itemLike: any) => itemLike?.id_user == id_user)
+    return (
+      <TouchableOpacity
+        onPress={() => onclickLike(item)}
+        onLongPress={() => setIconEmotion(item.id)}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          flex: 1
+        }}>
+        {checkLike?.emotion == 2 ? (
+          <Image
+            style={{
+              width: width * 45,
+              height: width * 45,
+              marginTop: 3,
+            }}
+            source={{
+              uri: 'https://cdn.chanhtuoi.com/uploads/2020/05/icon-facebook-08-2.jpg.webp',
+            }}
+          />
+        ) : checkLike?.emotion == 3 ? (
+          <Image
+            style={{
+              width: width * 45,
+              height: width * 45,
+              marginTop: 3,
+            }}
+            source={{
+              uri: 'https://cdn.chanhtuoi.com/uploads/2020/05/icon-facebook-27-1.jpg',
+            }}
+          />
+        ) : checkLike?.emotion == 4 ? (
+          <Image
+            style={{
+              width: width * 45,
+              height: width * 45,
+              marginTop: 3,
+            }}
+            source={{
+              uri: 'https://banner2.cleanpng.com/20180408/yew/kisspng-emoji-emoticon-computer-icons-sticker-angry-5aca0d77d693d2.7197998315231911598789.jpg',
+            }}
+          />
+        ) : checkLike?.emotion == 1 ? (
+
+          <Image
+            style={{
+              width: width * 45,
+              height: width * 45,
+              marginTop: 3,
+            }}
+            source={{
+              uri: 'https://banner2.cleanpng.com/20180704/tgy/kisspng-thumb-signal-computer-icons-like-button-clip-art-y-linkage-5b3ca3765cac24.0367282415307006623796.jpg',
+            }}
+          />
+        )
+          : (
+            <View
+              style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <IconAntDesign
+                name={'like2'}
+                size={widthApp < 739 ? width * 35 : height * 45}
+                style={[styles.icon, { color: colors.color_black }]}
+              />
+              <Text
+                style={{
+                  color: colors.color_black,
+                  marginTop: 4,
+                  marginLeft: -5,
+                  fontSize: widthApp < 739 ? width * 25 : height * 30,
+                  fontWeight: '400',
+                }}>
+                Thích
+              </Text>
+            </View>
+          )
+        }
+      </TouchableOpacity>
+    );
+  }
+  // hiện nhưng like của mọi người trong bài viết
+  const renderShowLike = (item: any) => {
+    const checkLike = item?.likes?.find((itemLike: any) => itemLike?.id_user == id_user)
+    return (
+      <Text>
+        {
+          checkLike == undefined ? item?.likes?.length :
+            +item?.likes?.length - +1 == 0 ?
+              'Bạn' :
+              ` Bạn và ${+item?.likes?.length - +1} người khác`
+        }
+
+      </Text>
+    )
+
+  }
+  useEffect(() => {
+    // @ts-ignore
+    dispatch(getAllDataPost())
+  }, [])
+  console.log('tịa sao')
   return (
     <View
       style={{
         marginTop: widthApp < 739 ? width * 15 : height * 6,
       }}>
-      {dataFake?.map((item: any) => {
+      {dataPostsFake?.map((item: any) => {
         return (
           <View
             style={{
@@ -147,7 +240,7 @@ const Contents = () => {
               paddingVertical: widthApp < 739 ? width * 15 : height * 10,
             }}>
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <View style={styles.flex}>
                 <Image
                   style={{
@@ -157,7 +250,7 @@ const Contents = () => {
                     marginRight: widthApp < 739 ? width * 10 : height * 15,
                   }}
                   source={{
-                    uri: 'https://scontent.fsgn2-5.fna.fbcdn.net/v/t39.30808-6/272519340_456856172780572_414985506137340571_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=9fRxBK9mdHQAX8OPZdt&_nc_oc=AQn_9YsUgU-UX0dhjk5Vba-glqrTppvPC4rLpDonq3na443c-R6-QI3E5cSQWeUHhlQ&tn=hv4vrEB4iLvlP2Rd&_nc_ht=scontent.fsgn2-5.fna&oh=00_AfCKh6wFAbwezflKDWwFBy0HAzxfdY8TmIIgn-6wgs0agg&oe=6386AC03',
+                    uri: item?.image[0],
                   }}
                 />
                 <View>
@@ -195,14 +288,14 @@ const Contents = () => {
                   <IconDot
                     name="dots-three-horizontal"
                     size={widthApp < 739 ? width * 30 : height * 40}
-                    style={[styles.icon, {color: 'black'}]}
+                    style={[styles.icon, { color: 'black' }]}
                   />
                 </TouchableOpacity>
                 <TouchableOpacity>
                   <IconAntDesign
                     name="close"
                     size={widthApp < 739 ? width * 35 : height * 40}
-                    style={[styles.icon, {color: 'black'}]}
+                    style={[styles.icon, { color: 'black' }]}
                   />
                 </TouchableOpacity>
               </View>
@@ -216,7 +309,7 @@ const Contents = () => {
               Chúc mừng năm mới
             </Text>
 
-            <TouchableOpacity style={{width: '100%'}}>
+            <TouchableOpacity style={{ width: '100%' }}>
               <FlatGrid
                 itemDimension={widthApp < 739 ? 90 : 160}
                 data={item.image}
@@ -266,7 +359,7 @@ const Contents = () => {
                           source={{
                             uri: `${itemImage.item}`,
                           }}
-                          style={{width: '100%'}}>
+                          style={{ width: '100%' }}>
                           <View
                             style={{
                               width:
@@ -329,83 +422,101 @@ const Contents = () => {
               />
             </TouchableOpacity>
 
-            {item?.likes?.find((itemLike: any) => itemLike == id_user) !==
-            undefined ? (
-              <TouchableOpacity style={styles.flex}>
-                <IconAntDesign
-                  name={'like1'}
-                  size={widthApp < 739 ? width * 35 : height * 45}
-                  style={[
-                    styles.icon,
-                    {
-                      color: colors.color_blue,
-                      marginBottom: widthApp < 739 ? width * 10 : height * 10,
-                    },
-                  ]}
-                />
-                <Text
-                  style={{
-                    fontSize: widthApp < 739 ? width * 25 : height * 25,
-                    color: 'black',
-                    fontWeight: '400',
-                    marginLeft: widthApp < 739 ? width * -5 : height * -5,
-                  }}>
-                  Bạn
-                  {item?.likes.length > 1
-                    ? ` và ${+item?.likes?.length - +1} người khác`
-                    : null}
-                </Text>
-              </TouchableOpacity>
-            ) : (
+            {
               item?.likes?.length > 0 && (
-                <TouchableOpacity style={styles.flex}>
-                  <IconAntDesign
-                    name={'like1'}
-                    size={widthApp < 739 ? width * 35 : height * 45}
-                    style={[
-                      styles.icon,
-                      {
-                        color: colors.color_blue,
-                        marginBottom: widthApp < 739 ? width * 10 : height * 10,
-                      },
-                    ]}
-                  />
+                <View style={[styles.flex, { marginBottom: width * 5 }]}>
+                  {/* hiện nhưng like của bài viết */}
+                  {item?.likes?.map((itemLike: any, index: any) =>
+                    icons.map((itemIcon: any) => {
+                      if (itemLike?.emotion == itemIcon.id) {
+                        return (
+                          <TouchableOpacity
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                            }}>
+                            <Image
+                              style={{
+                                width: width * 45,
+                                height: width * 45,
+                                marginTop: 3,
+                                marginLeft: index > 0 ? 5 : 2
+                              }}
+                              source={{
+                                uri: itemIcon.image,
+                              }}
+                            />
+                          </TouchableOpacity>
+                        )
+                      }
+
+                    })
+
+                  )}
 
                   <Text
                     style={{
                       fontSize: widthApp < 739 ? width * 25 : height * 25,
                       color: 'black',
                       fontWeight: '400',
-                      marginLeft: widthApp < 739 ? width * -5 : height * -5,
+                      marginLeft: widthApp < 739 ? width * 5 : width * 5,
                     }}>
-                    {item?.likes?.length}
+                    {renderShowLike(item)}
                   </Text>
-                </TouchableOpacity>
+                </View>
               )
-            )}
+            }
 
-            <View style={{borderColor: '#DDDDDD', borderTopWidth: 1}}>
+            <View
+              style={{
+                borderColor: '#DDDDDD',
+                borderTopWidth: 1,
+                position: 'relative',
+              }}>
+
+              {/* hiện các biểu cảm để chọn */}
+              {item?.id == iconEmotion ? (
+                <View style={[styles.emotion, { bottom: width * 50 }]}>
+                  {
+                    icons?.map((itemIcon: any) => {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => onclickLike({ data: item, emotion: itemIcon.id })}>
+                          <Image
+                            style={{ width: width * 55, height: width * 55 }}
+                            source={{
+                              uri: itemIcon.image,
+                            }}
+                          />
+                        </TouchableOpacity>
+                      )
+                    })
+                  }
+                </View>
+              ) : null}
+
+
               <View
                 style={[
                   styles.flex,
                   {
-                    justifyContent: 'space-between',
                     marginVertical: widthApp < 739 ? width * 5 : height * 5,
+                    flexGrow: 1
                   },
                 ]}>
-                {item?.likes?.find((itemLike: any) => itemLike == id_user) !==
-                undefined ? (
+                {item?.likes?.length <= 0 ? (
                   <TouchableOpacity
+                    onLongPress={() => setIconEmotion(item.id)} //hove khi chưa  like
                     onPress={() => onclickLike(item)}
-                    style={{flexDirection: 'row', alignItems: 'center'}}>
+                    style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                     <IconAntDesign
-                      name={'like1'}
+                      name={'like2'}
                       size={widthApp < 739 ? width * 35 : height * 45}
-                      style={[styles.icon, {color: colors.color_blue}]}
+                      style={[styles.icon, { color: colors.color_black }]}
                     />
                     <Text
                       style={{
-                        color: colors.color_blue,
+                        color: colors.color_black,
                         marginTop: 4,
                         marginLeft: -5,
                         fontSize: widthApp < 739 ? width * 25 : height * 30,
@@ -415,29 +526,15 @@ const Contents = () => {
                     </Text>
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity
-                    onPress={() => onclickLike(item)}
-                    style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <IconAntDesign
-                      name={'like2'}
-                      size={widthApp < 739 ? width * 35 : height * 45}
-                      style={[styles.icon, {color: 'black'}]}
-                    />
-                    <Text
-                      style={{
-                        color: 'black',
-                        marginTop: 4,
-                        marginLeft: -5,
-                        fontSize: widthApp < 739 ? width * 25 : height * 30,
-                        fontWeight: '400',
-                      }}>
-                      Thích
-                    </Text>
-                  </TouchableOpacity>
+                  componentRenderLike(item)
                 )}
-
+                {/* comment */}
                 <TouchableOpacity
-                  style={{flexDirection: 'row', alignItems: 'center'}}>
+                  onPress={() => navigation?.navigate('Comment', {
+                    dataPost: item,
+                    dataPosts: dataPostsFake
+                  })}
+                  style={[styles.flex, { flex: 1, justifyContent: 'center' }]}>
                   <IconMaterialCommunityIcons
                     name="comment-outline"
                     size={widthApp < 739 ? width * 35 : height * 45}
@@ -462,11 +559,11 @@ const Contents = () => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={{flexDirection: 'row', alignItems: 'center'}}>
+                  style={[styles.flex, { flex: 1, justifyContent: 'flex-end' }]}>
                   <IconMaterialCommunityIcons
                     name="share-outline"
                     size={widthApp < 739 ? width * 35 : height * 45}
-                    style={[styles.icon, {color: 'black'}]}
+                    style={[styles.icon, { color: 'black' }]}
                   />
                   <Text
                     style={{
@@ -501,5 +598,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 3,
     marginRight: 10,
+  },
+  emotion: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 60,
+    borderWidth: 1,
+    borderColor: '#DDDDDD',
+    position: 'absolute',
+    backgroundColor: '#fff',
+    paddingHorizontal: 5,
+    paddingVertical: 10,
+    width: '100%',
+    overflow: 'hidden',
+    justifyContent: 'space-around',
   },
 });

@@ -375,7 +375,7 @@ const Friend = () => {
                     <Image
                       style={{
                         width: widthApp < 739 ? width * 155 : width * 20,
-                        height: widthApp < 739 ? height * 32 : height * 90,
+                        height: widthApp < 739 ? width * 155 : width * 20,
                         borderRadius: 100,
                         marginRight: widthApp < 739 ? width * 25 : width * 20,
                       }}

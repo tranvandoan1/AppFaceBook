@@ -1,28 +1,26 @@
 // In App.js in a new project
 import {
-  ImageURISource,
-  SafeAreaView,
-  StyleSheet,
   Text,
   View,
   LogBox,
+  StatusBar,
 } from 'react-native';
-import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import IconNotifi from 'react-native-vector-icons/Ionicons';
-import HomeIcon from 'react-native-vector-icons/AntDesign';
 import IconHome from 'react-native-vector-icons/Entypo';
 import IconMenu from 'react-native-vector-icons/SimpleLineIcons';
 import IconFriend from 'react-native-vector-icons/Feather';
 import Home from '../Home/Home';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Size, SizeScale} from '../../assets/size';
+import { Provider } from 'react-redux'
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Size, SizeScale } from '../../assets/size';
 import Friend from '../Friend/Friend';
 import colors from '../../assets/colors';
+import Comments from '../Home/Comments';
+import { store } from '../../App/Store';
+import Contents from '../Home/Contents';
 // @ts-ignore
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -36,7 +34,7 @@ function Router(props: any) {
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          height: widthApp > 739 ? height * 155 : height * 17,
+          height: widthApp > 739 ? height * 180 : height * 25,
           zIndex: 0,
           flexDirection: 'row',
           alignItems: 'center',
@@ -52,7 +50,7 @@ function Router(props: any) {
           headerShown: false,
           tabBarIcon: () => <View></View>,
           tabBarActiveBackgroundColor: '#fff',
-          tabBarLabel: ({focused, color}) => (
+          tabBarLabel: ({ focused, color }) => (
             <View
               style={{
                 flexDirection: 'column',
@@ -91,7 +89,7 @@ function Router(props: any) {
           headerShown: false,
           tabBarIcon: () => <View></View>,
           tabBarActiveBackgroundColor: '#fff',
-          tabBarLabel: ({focused, color}) => (
+          tabBarLabel: ({ focused, color }) => (
             <View
               style={{
                 flexDirection: 'column',
@@ -130,7 +128,7 @@ function Router(props: any) {
           headerShown: false,
           tabBarIcon: () => <View></View>,
           tabBarActiveBackgroundColor: '#fff',
-          tabBarLabel: ({focused, color}) => (
+          tabBarLabel: ({ focused, color }) => (
             <View
               style={{
                 flexDirection: 'column',
@@ -157,7 +155,7 @@ function Router(props: any) {
                   justifyContent: 'center',
                   alignItems: 'center',
                 }}>
-                <Text style={{color: '#fff', fontSize: 12, zIndex: 100}}>
+                <Text style={{ color: '#fff', fontSize: width * 17, zIndex: 100 }}>
                   3
                 </Text>
               </View>
@@ -189,7 +187,7 @@ function Router(props: any) {
           headerShown: false,
           tabBarIcon: () => <View></View>,
           tabBarActiveBackgroundColor: '#fff',
-          tabBarLabel: ({focused, color}) => (
+          tabBarLabel: ({ focused, color }) => (
             <View
               style={{
                 flexDirection: 'column',
@@ -227,28 +225,37 @@ function Router(props: any) {
 const Stack = createNativeStackNavigator();
 function App() {
   return (
-    // <Provider store={store}>
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="home"
-          component={Router}
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
-    // </Provider>
+    <Provider store={store}>
+      <NavigationContainer>
+        <StatusBar hidden={true} />
+        <Stack.Navigator>
+
+          <Stack.Screen
+            name="Home"
+            component={Contents}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="Comment"
+            component={Comments}
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
-const styles = StyleSheet.create({
-  loading: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0)',
-  },
-});
+// const styles = StyleSheet.create({
+//   loading: {
+//     flexDirection: 'row',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//     flex: 1,
+//     backgroundColor: 'rgba(0, 0, 0, 0)',
+//   },
+// });
 export default App;

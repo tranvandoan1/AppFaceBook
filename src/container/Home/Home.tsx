@@ -45,7 +45,10 @@ const data = [
       'https://sgv.edu.vn/uploads/images/info/nhiep-anh-gia-tieng-anh-la-gi.png',
   },
 ];
-const Home = ({navigation: {navigate}}: any) => {
+type Props = {
+  navigation: any
+}
+const Home = ({ navigation }: Props) => {
   const width = SizeScale().width;
   const height = SizeScale().height;
   const widthApp = Size().width;
@@ -245,7 +248,7 @@ const Home = ({navigation: {navigate}}: any) => {
           {/* up story */}
           <Story />
           {/* content */}
-          <Contents />
+          <Contents navigation={navigation} />
         </ScrollView>
       </SafeAreaView>
     </View>
